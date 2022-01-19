@@ -69,7 +69,9 @@ public class subController {
                 System.out.println("@@@ :"+ comple);
                 JSONParser parser = new JSONParser();
                 JSONObject jsonObject2 = (JSONObject) parser.parse(comple);
+                jsonObject2.put("name2",도착예정시간+1);
                 리스트테스트.add(jsonObject2);
+
             }
             System.out.println("@@@@@@@@abc :"+리스트테스트.toString());
 
