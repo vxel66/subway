@@ -16,16 +16,36 @@
 
     <div class="container">
         <div class="offset-3 col-md-6 ">
-        <div class="row">
-            <div class="col-md-9">
-                <input type="text" id="inputtext" class="form-control">
+            <div>
+                <div id="time" class="time"></div>
+                <div id="date" class="date"></div>
             </div>
-            <div class="col-md-3">
-                <button class="btn btn-primary"  onclick="search()">검색</button>
+            <div class="row">
+                <div class="col-md-9">
+                    <input type="text" id="inputtext" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary"  onclick="search()">검색</button>
+                </div>
             </div>
-        </div>
+            <div class="row">
+                <h3>상행선</h3>
+                <div th:each="uplist:${uplist}">
+
+                    <div th:text="${uplist.name2}"></div>
+                    <div th:text="${uplist.trainLineNm.split('-')[0]}"></div>
+
+                </div>
+                <h3>하행선</h3>
+                <div th:each="downlist:${downlist}">
+                    <div th:text="${downlist.name2}"></div>
+                    <div th:text="${downlist.trainLineNm.split('-')[0]}"></div>
+                </div>
+            </div>
         </div>
     </div>
+
+
 
 
 </body>
