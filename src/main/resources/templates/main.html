@@ -12,20 +12,19 @@
     <!-- jquery [ ajax용 ] -->
     <script  src="http://code.jquery.com/jquery-latest.min.js"></script>
     <!-- 개발자 js 가져오기 -->
+    <script th:src = "@{/js/main.js}"></script>
 
     <div class="container">
-
         <div class="offset-3 col-md-6 ">
-            <div style="border:1px solid green; height: 300px;">
-                <div th:each="uplist : ${uplist}">
-                    <div th:text="${uplist.name}"></div>
-                    <div th:text="${uplist.name2}"></div>
-                </div>
+        <div class="row">
+            <div class="col-md-9">
+                <input type="text" id="inputtext" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary"  onclick="search()">검색</button>
             </div>
         </div>
-
-
-
+        </div>
     </div>
 
 
