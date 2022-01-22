@@ -48,7 +48,7 @@ public class subController {
             for (int i = 0; i < jsonArray.size(); i++) {
                 JSONObject content = (JSONObject) jsonArray.get(i);
                 String 상하행 = (String) content.get("updnLine");
-
+                System.out.println("상하행 검색 X: " + 상하행);
                 if (상하행.equals("상행")) {
                     상행리스트.add((JSONObject) jsonArray.get(i));
                 } else {
@@ -80,6 +80,7 @@ public class subController {
                 JSONObject content = (JSONObject) 하행리스트.get(i);
                 int 도착예정시간 = 0;
                 String s = (String) content.get("arvlMsg2");
+                System.out.println("s+s : " + s);
                 if (s.indexOf("]") == -1) {
                     도착예정시간 = 0;
                 } else {
@@ -93,8 +94,8 @@ public class subController {
                 }
             }
 
-            System.out.println(리스트테스트);
-            System.out.println(리스트테스트2);
+            //System.out.println(리스트테스트);
+            //System.out.println(리스트테스트2);
 
             model.addAttribute("uplist", 리스트테스트);
             model.addAttribute("downlist", 리스트테스트2);
@@ -127,22 +128,35 @@ public class subController {
         // System.out.println("data 키 호출 해서 리스트 담기 : " +  jsonArray );
         JSONArray 상행리스트 = new JSONArray();
         JSONArray 하행리스트 = new JSONArray();
-        JSONArray 리스트테스트 = new JSONArray();
-        JSONArray 리스트테스트2 = new JSONArray();
+        JSONArray 외선리스트 = new JSONArray();
+        JSONArray 내선리스트 = new JSONArray();
+        JSONArray 리스트테스트 = new JSONArray(); //상행 리스트
+        JSONArray 리스트테스트2 = new JSONArray(); //하행 리스트
+        JSONArray 리스트테스트3 = new JSONArray(); //외선 리스트
+        JSONArray 리스트테스트4 = new JSONArray(); //내선 리스트
 
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject content = (JSONObject) jsonArray.get(i);
             String 상하행 = (String) content.get("updnLine");
-
+            //System.out.println("상하행 검색 O: " + 상하행);
             if (상하행.equals("상행")) {
                 상행리스트.add((JSONObject) jsonArray.get(i));
-            } else {
+                System.out.println(상행리스트);
+            } else if(상하행.equals("하행")){
                 하행리스트.add(jsonArray.get(i));
+                System.out.println(하행리스트);
+            } else if(상하행.equals("외선")){
+                외선리스트.add(jsonArray.get(i));
+                System.out.println(외선리스트);
+            } else{
+                내선리스트.add(jsonArray.get(i));
+                System.out.println(내선리스트);
             }
         }
         Date date = new Date();
         // 시간 더하기
         Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
         for (int i = 0; i < 상행리스트.size(); i++) {
             JSONObject content = (JSONObject) 상행리스트.get(i);
             int 도착예정시간 = 0;
@@ -151,12 +165,11 @@ public class subController {
                 도착예정시간 = 0;
             }else{
                 도착예정시간 = Integer.parseInt(s.substring(1, s.indexOf("]"))) * 3;
-                cal.setTime(date);
                 cal.add(Calendar.MINUTE, 도착예정시간);
                 SimpleDateFormat sdformat = new SimpleDateFormat("HH:mm");
                 String time = sdformat.format(cal.getTime());
                 content.put("name2",time);
-                리스트테스트.add(time);
+                리스트테스트.add(content);
                 cal.setTime(date);
             }
 
@@ -165,28 +178,22 @@ public class subController {
             JSONObject content = (JSONObject) 하행리스트.get(i);
             int 도착예정시간 = 0;
             String s = (String) content.get("arvlMsg2");
+            System.out.println("sss : " + s);
             if (s.indexOf("]") == -1) {
                 도착예정시간 = 0;
-            }else{
+            } else {
                 도착예정시간 = Integer.parseInt(s.substring(1, s.indexOf("]"))) * 3;
-                cal.setTime(date);
                 cal.add(Calendar.MINUTE, 도착예정시간);
                 SimpleDateFormat sdformat = new SimpleDateFormat("HH:mm");
                 String time = sdformat.format(cal.getTime());
-                content.put("name2",time);
-                리스트테스트2.add(time);
+                content.put("name2", time);
+                리스트테스트2.add(content);
                 cal.setTime(date);
             }
-
         }
         model.addAttribute("uplist", 리스트테스트);
         model.addAttribute("downlist", 리스트테스트2);
         return "main";
     }
-
-
-
-
-
 
 }

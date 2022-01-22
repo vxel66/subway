@@ -1,6 +1,7 @@
 
 function search(){
     var inputtext = $("#inputtext").val();
+    alert(inputtext);
     location.href = "/searchcontroller/"+inputtext;
 }
 
