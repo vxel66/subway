@@ -60,7 +60,7 @@ public class subController {
             Calendar cal = Calendar.getInstance();
             cal.setTime(date);
             for (int i = 0; i < 상행리스트.size(); i++) {
-                JSONObject content = (JSONObject) jsonArray.get(i);
+                JSONObject content = (JSONObject) 상행리스트.get(i);
                 int 도착예정시간 = 0;
                 String s = (String) content.get("arvlMsg2");
                 if (s.indexOf("]") == -1) {
