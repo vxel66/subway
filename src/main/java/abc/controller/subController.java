@@ -15,6 +15,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 @Controller
 public class subController {
@@ -40,6 +43,7 @@ public class subController {
             JSONArray 상행리스트 = new JSONArray();
             JSONArray 하행리스트 = new JSONArray();
             JSONArray 리스트테스트 = new JSONArray();
+            JSONArray 리스트테스트2 = new JSONArray();
 
             for (int i = 0; i < jsonArray.size(); i++) {
                 JSONObject content = (JSONObject) jsonArray.get(i);
@@ -51,7 +55,10 @@ public class subController {
                     하행리스트.add(jsonArray.get(i));
                 }
             }
-
+            Date date = new Date();
+            // 시간 더하기
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
             for (int i = 0; i < 상행리스트.size(); i++) {
                 JSONObject content = (JSONObject) jsonArray.get(i);
                 int 도착예정시간 = 0;
@@ -60,13 +67,37 @@ public class subController {
                     도착예정시간 = 0;
                 }else{
                     도착예정시간 = Integer.parseInt(s.substring(1, s.indexOf("]"))) * 3;
-                    content.put("name2",도착예정시간+1);
+                    cal.add(Calendar.MINUTE, 도착예정시간);
+                    SimpleDateFormat sdformat = new SimpleDateFormat("HH:mm");
+                    String time = sdformat.format(cal.getTime());
+                    content.put("name2",time);
                     리스트테스트.add(content);
+                    cal.setTime(date);
                 }
 
             }
+            for (int i = 0; i < 하행리스트.size(); i++) {
+                JSONObject content = (JSONObject) 하행리스트.get(i);
+                int 도착예정시간 = 0;
+                String s = (String) content.get("arvlMsg2");
+                if (s.indexOf("]") == -1) {
+                    도착예정시간 = 0;
+                } else {
+                    도착예정시간 = Integer.parseInt(s.substring(1, s.indexOf("]"))) * 3;
+                    cal.add(Calendar.MINUTE, 도착예정시간);
+                    SimpleDateFormat sdformat = new SimpleDateFormat("HH:mm");
+                    String time = sdformat.format(cal.getTime());
+                    content.put("name2", time);
+                    리스트테스트2.add(content);
+                    cal.setTime(date);
+                }
+            }
+
             System.out.println(리스트테스트);
+            System.out.println(리스트테스트2);
+
             model.addAttribute("uplist", 리스트테스트);
+            model.addAttribute("downlist", 리스트테스트2);
         }catch(Exception e){
         }
         return "main";
@@ -109,34 +140,45 @@ public class subController {
                 하행리스트.add(jsonArray.get(i));
             }
         }
-
+        Date date = new Date();
+        // 시간 더하기
+        Calendar cal = Calendar.getInstance();
         for (int i = 0; i < 상행리스트.size(); i++) {
-            JSONObject content = (JSONObject) jsonArray.get(i);
+            JSONObject content = (JSONObject) 상행리스트.get(i);
             int 도착예정시간 = 0;
             String s = (String) content.get("arvlMsg2");
             if (s.indexOf("]") == -1) {
                 도착예정시간 = 0;
             }else{
                 도착예정시간 = Integer.parseInt(s.substring(1, s.indexOf("]"))) * 3;
-                content.put("name2",도착예정시간+1);
-                리스트테스트.add(content);
+                cal.setTime(date);
+                cal.add(Calendar.MINUTE, 도착예정시간);
+                SimpleDateFormat sdformat = new SimpleDateFormat("HH:mm");
+                String time = sdformat.format(cal.getTime());
+                content.put("name2",time);
+                리스트테스트.add(time);
+                cal.setTime(date);
             }
 
         }
         for (int i = 0; i < 하행리스트.size(); i++) {
-            JSONObject content = (JSONObject) jsonArray.get(i);
+            JSONObject content = (JSONObject) 하행리스트.get(i);
             int 도착예정시간 = 0;
             String s = (String) content.get("arvlMsg2");
             if (s.indexOf("]") == -1) {
                 도착예정시간 = 0;
             }else{
                 도착예정시간 = Integer.parseInt(s.substring(1, s.indexOf("]"))) * 3;
-                content.put("name2",도착예정시간+1);
-                리스트테스트2.add(content);
+                cal.setTime(date);
+                cal.add(Calendar.MINUTE, 도착예정시간);
+                SimpleDateFormat sdformat = new SimpleDateFormat("HH:mm");
+                String time = sdformat.format(cal.getTime());
+                content.put("name2",time);
+                리스트테스트2.add(time);
+                cal.setTime(date);
             }
 
         }
-        System.out.println(리스트테스트);
         model.addAttribute("uplist", 리스트테스트);
         model.addAttribute("downlist", 리스트테스트2);
         return "main";
