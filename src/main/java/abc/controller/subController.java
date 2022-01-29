@@ -1,10 +1,12 @@
 package abc.controller;
 
 
+import abc.service.subwayService;
 import lombok.SneakyThrows;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,197 +24,37 @@ import java.util.Date;
 @Controller
 public class subController {
 
+    @Autowired
+    subwayService sservice;
     // 메인페이지 매핑[ 연결 ]
     @GetMapping("/")
     public String main(Model model) {
-        try{
-            URL url = new URL("http://swopenapi.seoul.go.kr/api/subway/6f58714f6c64686534356359587644/json/realtimeStationArrival/0/8/%ED%95%9C%EB%8C%80%EC%95%9E");
-            // url : http://swopenapi.seoul.go.kr/api/subway/인증키/요청파일타입/서비스명/시작위치/끝위치/역이름
-            // 2. 스트림 버퍼를 통한 URL내 HTML 읽어오기                      // 호출 개수 : page="시작번호"&perpage="마지막번호"
-            BufferedReader bf = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
-            // 3. 읽어온 내용 문자열 담기
-            String result = bf.readLine(); // .readLine() : 모든 문자열 읽어오기
-            // 3. 읽어온 내용을 json으로 파싱 하기
-            JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(result);
-            // 1.JSONparser json데이터 넣어서 파싱  // 2.jsonobject 형 변환
-            // System.out.println("rul 내용을 json 변환[ json ] : " +  jsonObject );
-            JSONArray jsonArray = (JSONArray) jsonObject.get("realtimeArrivalList"); // 실제 지하철 정보 리스트
-            // "data" 라는 키 요청 해서 리스트 담기
-            // System.out.println("data 키 호출 해서 리스트 담기 : " +  jsonArray );
-            JSONArray 상행리스트 = new JSONArray();
-            JSONArray 하행리스트 = new JSONArray();
-            JSONArray 리스트테스트 = new JSONArray();
-            JSONArray 리스트테스트2 = new JSONArray();
 
-            for (int i = 0; i < jsonArray.size(); i++) {
-                JSONObject content = (JSONObject) jsonArray.get(i);
-                String 상하행 = (String) content.get("updnLine");
-                System.out.println("상하행 검색 X: " + 상하행);
-                if (상하행.equals("상행")) {
-                    상행리스트.add((JSONObject) jsonArray.get(i));
-                } else {
-                    하행리스트.add(jsonArray.get(i));
-                }
-            }
-            Date date = new Date();
-            // 시간 더하기
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            for (int i = 0; i < 상행리스트.size(); i++) {
-                JSONObject content = (JSONObject) 상행리스트.get(i);
-                int 도착예정시간 = 0;
-                String s = (String) content.get("arvlMsg2");
-                if (s.indexOf("]") == -1) {
-                    도착예정시간 = 0;
-                }else{
-                    도착예정시간 = Integer.parseInt(s.substring(1, s.indexOf("]"))) * 3;
-                    cal.add(Calendar.MINUTE, 도착예정시간);
-                    SimpleDateFormat sdformat = new SimpleDateFormat("HH:mm");
-                    String time = sdformat.format(cal.getTime());
-                    content.put("name2",time);
-                    리스트테스트.add(content);
-                    cal.setTime(date);
-                }
-
-            }
-            for (int i = 0; i < 하행리스트.size(); i++) {
-                JSONObject content = (JSONObject) 하행리스트.get(i);
-                int 도착예정시간 = 0;
-                String s = (String) content.get("arvlMsg2");
-                System.out.println("s+s : " + s);
-                if (s.indexOf("]") == -1) {
-                    도착예정시간 = 0;
-                } else {
-                    도착예정시간 = Integer.parseInt(s.substring(1, s.indexOf("]"))) * 3;
-                    cal.add(Calendar.MINUTE, 도착예정시간);
-                    SimpleDateFormat sdformat = new SimpleDateFormat("HH:mm");
-                    String time = sdformat.format(cal.getTime());
-                    content.put("name2", time);
-                    리스트테스트2.add(content);
-                    cal.setTime(date);
-                }
-            }
-
+        JSONArray uplist = sservice.getMain(1);
+        JSONArray downlist = sservice.getMain(2);
             //System.out.println(리스트테스트);
             //System.out.println(리스트테스트2);
 
-            model.addAttribute("uplist", 리스트테스트);
-            model.addAttribute("downlist", 리스트테스트2);
-        }catch(Exception e){
-        }
+        model.addAttribute("uplist", uplist);
+        model.addAttribute("downlist", downlist);
         return "main";
     }
     @SneakyThrows
     @GetMapping("/searchcontroller/{inputtext}")
     public String searchcontroller(@PathVariable("inputtext")String inputtext,Model model ){
-        String encode= URLEncoder.encode(inputtext, "utf-8");
-        String search = "http://swopenapi.seoul.go.kr/api/subway/6f58714f6c64686534356359587644/json/realtimeStationArrival/0/8/"+encode;
-        URL url = new URL(search);
-        // url : http://swopenapi.seoul.go.kr/api/subway/인증키/요청파일타입/서비스명/시작위치/끝위치/역이름
-        // 2. 스트림 버퍼를 통한 URL내 HTML 읽어오기                      // 호출 개수 : page="시작번호"&perpage="마지막번호"
-        BufferedReader bf = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
-        // 3. 읽어온 내용 문자열 담기
-        String result = bf.readLine(); // .readLine() : 모든 문자열 읽어오기
-        // 3. 읽어온 내용을 json으로 파싱 하기
-        JSONParser jsonParser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) jsonParser.parse(result);
-        // 1.JSONparser json데이터 넣어서 파싱  // 2.jsonobject 형 변환
-        // System.out.println("rul 내용을 json 변환[ json ] : " +  jsonObject );
-        String qwe = String.valueOf(jsonObject.get("total"));
-        if(qwe.equals("0")){
+        JSONArray uplist = sservice.getSearch(inputtext, 1);
+        JSONArray downlist = sservice.getSearch(inputtext, 2);
+        JSONArray outlist = sservice.getSearch(inputtext, 3);
+        JSONArray inlist = sservice.getSearch(inputtext, 4);
+        System.out.println(inlist);
+        model.addAttribute("uplist", uplist);
+        model.addAttribute("downlist", downlist);
+        model.addAttribute("outlist", outlist);
+        model.addAttribute("inlist", inlist);
+        System.out.println("inlist : " + inlist);
+        if(uplist == null && downlist == null && outlist == null && inlist == null){
             return "redirect:/";
         }
-        JSONArray jsonArray = (JSONArray) jsonObject.get("realtimeArrivalList"); // 실제 지하철 정보 리스트
-        // "data" 라는 키 요청 해서 리스트 담기
-        // System.out.println("data 키 호출 해서 리스트 담기 : " +  jsonArray );
-        JSONArray 상행리스트 = new JSONArray();
-        JSONArray 하행리스트 = new JSONArray();
-        JSONArray 외선리스트 = new JSONArray();
-        JSONArray 내선리스트 = new JSONArray();
-        JSONArray 리스트테스트 = new JSONArray(); //상행 리스트
-        JSONArray 리스트테스트2 = new JSONArray(); //하행 리스트
-        JSONArray 리스트테스트3 = new JSONArray(); //외선 리스트
-        JSONArray 리스트테스트4 = new JSONArray(); //내선 리스트
-
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject content = (JSONObject) jsonArray.get(i);
-            String 상하행 = (String) content.get("updnLine");
-            //System.out.println("상하행 검색 O: " + 상하행);
-            if (상하행.equals("상행")) {
-                상행리스트.add((JSONObject) jsonArray.get(i));
-                System.out.println(상행리스트);
-            } else if(상하행.equals("하행")){
-                하행리스트.add(jsonArray.get(i));
-                System.out.println(하행리스트);
-            } else if(상하행.equals("외선")){
-                외선리스트.add(jsonArray.get(i));
-                System.out.println(외선리스트);
-            } else{
-                내선리스트.add(jsonArray.get(i));
-                System.out.println(내선리스트);
-            }
-        }
-        Date date = new Date();
-        // 시간 더하기
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        for (int i = 0; i < 상행리스트.size(); i++) {
-            JSONObject content = (JSONObject) 상행리스트.get(i);
-            int 도착예정시간 = 0;
-            String s = (String) content.get("arvlMsg2");
-            if (s.indexOf("]") == -1) {
-                도착예정시간 = 0;
-            }else{
-                도착예정시간 = Integer.parseInt(s.substring(1, s.indexOf("]"))) * 3;
-                cal.add(Calendar.MINUTE, 도착예정시간);
-                SimpleDateFormat sdformat = new SimpleDateFormat("HH:mm");
-                String time = sdformat.format(cal.getTime());
-                content.put("name2",time);
-                리스트테스트.add(content);
-                cal.setTime(date);
-            }
-
-        }
-
-        for(int i = 0; i<외선리스트.size(); i++){
-            JSONObject content = (JSONObject) 외선리스트.get(i);
-            String s = (String) content.get("arvlMsg2");
-            System.out.println("외선 msg2 :"+s);
-            int 도착예정시간 = 0;
-            if(s.contains("분")) {
-                도착예정시간 = Integer.parseInt(s.substring(0,1));
-                cal.add(Calendar.MINUTE, 도착예정시간);
-                SimpleDateFormat sdformat = new SimpleDateFormat("HH:mm");
-                String time = sdformat.format(cal.getTime());
-                content.put("arvlMsg2",time);
-                리스트테스트3.add(content);
-                cal.setTime(date);
-            }else{
-                리스트테스트3.add(content);
-            }
-        }
-
-        for (int i = 0; i < 하행리스트.size(); i++) {
-            JSONObject content = (JSONObject) 하행리스트.get(i);
-            int 도착예정시간 = 0;
-            String s = (String) content.get("arvlMsg2");
-            System.out.println("sss : " + s);
-            if (s.indexOf("]") == -1) {
-                도착예정시간 = 0;
-            } else {
-                도착예정시간 = Integer.parseInt(s.substring(1, s.indexOf("]"))) * 3;
-                cal.add(Calendar.MINUTE, 도착예정시간);
-                SimpleDateFormat sdformat = new SimpleDateFormat("HH:mm");
-                String time = sdformat.format(cal.getTime());
-                content.put("name2", time);
-                리스트테스트2.add(content);
-                cal.setTime(date);
-            }
-        }
-        model.addAttribute("uplist", 리스트테스트);
-        model.addAttribute("downlist", 리스트테스트2);
-        model.addAttribute("outlist",리스트테스트3);
         return "main";
     }
 
