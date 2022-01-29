@@ -174,6 +174,25 @@ public class subController {
             }
 
         }
+
+        for(int i = 0; i<외선리스트.size(); i++){
+            JSONObject content = (JSONObject) 외선리스트.get(i);
+            String s = (String) content.get("arvlMsg2");
+            System.out.println("외선 msg2 :"+s);
+            int 도착예정시간 = 0;
+            if(s.contains("분")) {
+                도착예정시간 = Integer.parseInt(s.substring(0,1));
+                cal.add(Calendar.MINUTE, 도착예정시간);
+                SimpleDateFormat sdformat = new SimpleDateFormat("HH:mm");
+                String time = sdformat.format(cal.getTime());
+                content.put("arvlMsg2",time);
+                리스트테스트3.add(content);
+                cal.setTime(date);
+            }else{
+                리스트테스트3.add(content);
+            }
+        }
+
         for (int i = 0; i < 하행리스트.size(); i++) {
             JSONObject content = (JSONObject) 하행리스트.get(i);
             int 도착예정시간 = 0;
@@ -193,6 +212,7 @@ public class subController {
         }
         model.addAttribute("uplist", 리스트테스트);
         model.addAttribute("downlist", 리스트테스트2);
+        model.addAttribute("outlist",리스트테스트3);
         return "main";
     }
 

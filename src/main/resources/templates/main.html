@@ -41,6 +41,12 @@
                     <div th:text="${downlist.name2}"></div>
                     <div th:text="${downlist.trainLineNm.split('-')[0]}"></div>
                 </div>
+                <h3>외선</h3>
+                <div th:each="outlist : ${outlist}">
+                    <div th:text="${outlist.arvlMsg2}"></div>
+                    <div th:text="${outlist.trainLineNm.split('-')[0]}"></div>
+                </div>
+
             </div>
         </div>
     </div>
