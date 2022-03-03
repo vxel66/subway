@@ -30,10 +30,8 @@ public class subController {
     @GetMapping("/")
     public String main(Model model) {
 
-        JSONArray uplist = sservice.getMain(1);
-        JSONArray downlist = sservice.getMain(2);
-            //System.out.println(리스트테스트);
-            //System.out.println(리스트테스트2);
+        JSONArray uplist = sservice.getSearch("한대앞",1);
+        JSONArray downlist = sservice.getSearch("한대앞",2);
 
         model.addAttribute("uplist", uplist);
         model.addAttribute("downlist", downlist);
