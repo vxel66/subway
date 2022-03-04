@@ -1,18 +1,24 @@
 package abc.service;
 
+import abc.Dto.SubwayDto;
 import lombok.SneakyThrows;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class subwayService {
@@ -147,4 +153,35 @@ public class subwayService {
         }
         return null;
     }
+
+    public String readExcel()throws IOException {
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        List<SubwayDto> dataList = new ArrayList<>();
+        String path = "C:\\Users\\506\\Desktop\\intelliJ_box\\subway\\src\\main\\resources\\static\\file\\실시간도착_역정보_220211.xlsx";
+        File file = new File(path);
+        FileInputStream fileInputStream = new FileInputStream(file);
+        XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+        // getSheetAt(0); 첫번째 페이지
+        Sheet worksheet = workbook.getSheetAt(0);
+        System.out.println(worksheet.toString());
+        //  i = 1; 첫 열은 구분  i<worksheet.getPhysicalNumberOfRows(); 열의 길이만큼
+        for(int i = 1; i<631; i++){
+            // row = i번째 행의 데이터
+            Row row = worksheet.getRow(i);
+            SubwayDto data = new SubwayDto();
+            // 행의 1번째 데이터           실수 데이터 가져오기
+            data.setSubwayid(String.valueOf((int)row.getCell(0).getNumericCellValue()) );
+            System.out.println("서브웨이아이디 :"+(int)row.getCell(0).getNumericCellValue());
+            // 행의 2번째 데이터           문자열 데이터 가져오기
+            data.setStatnid(String.valueOf((int)row.getCell(1).getNumericCellValue()));
+            System.out.println("역아이디 :"+(int)row.getCell(1).getNumericCellValue());
+            // 행의 3번째 데이터           문자열 데이터 가져오기
+            // 논리 데이터    .getBooleanCellValue()
+            data.setStatnname(row.getCell(2).getStringCellValue());
+            System.out.println("역네임 :"+row.getCell(2).getStringCellValue());
+            dataList.add(data);
+        }
+        return "excelList";
+    }
+
 }

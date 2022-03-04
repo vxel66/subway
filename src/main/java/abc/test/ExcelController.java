@@ -1,6 +1,7 @@
 package abc.test;
 
 import abc.Dto.SubwayDto;
+import com.fasterxml.jackson.databind.jsontype.impl.AsDeductionTypeDeserializer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -101,5 +102,27 @@ public class ExcelController {
         model.addAttribute("datas",dataList);
         return "excelList";
     }
+
+//    1AsDeductionTypeDeserializerSDF
+//    ASDFGDSGFSDFGDSG
+    //    1AsDeductionTypeDeserializerSDF
+//    ASDFGDSGFSDFGDSG
+    //    1AsDeductionTypeDeserializerSDF
+//    ASDFGDSGFSDFGDSG//    1AsDeductionTypeDeserializerSDF
+////    ASDFGDSGFSDFGDSG//    1AsDeductionTypeDeserializerSDF
+////    ASDFGDSGFSDFGDSG//    1AsDeductionTypeDeserializerSDF
+////    ASDFGDSGFSDFGDSG//    1AsDeductionTypeDeserializerSDF
+////    ASDFGDSGFSDFGDSG//    1AsDeductionTypeDeserializerSDF
+////    ASDFGDSGFSDFGDSG//    1AsDeductionTypeDeserializerSDF
+////    ASDFGDSGFSDFGDSG//    1AsDeductionTypeDeserializerSDF
+////    ASDFGDSGFSDFGDSG
+
+
+
+
+
+
+
+
 
 }
