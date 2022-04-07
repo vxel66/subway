@@ -12,4 +12,6 @@ public class SubwayDto {
     private String subwayid;
     private String statnid;
     private String statnname;
+    private String back;
+    private String front;
 }

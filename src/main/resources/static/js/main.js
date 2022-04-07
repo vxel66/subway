@@ -8,6 +8,16 @@ function search(){
     location.href = "/searchcontroller/"+inputtext;
 }
 
+function upclick(up){
+    location.href = "/searchcontroller/"+up;
+}
+
+function subchange(inputtext,up){
+    alert(inputtext);
+    alert(up);
+    location.href = "/searchcontroller/"+inputtext+"@"+up;
+}
+
 function setClock(){
     var dateinfo = new Date();
     var hour = modifyNumber(dateinfo.getHours());

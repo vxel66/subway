@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.*;
 import java.net.URL;
@@ -24,8 +25,8 @@ import java.util.List;
 public class subwayService {
 
     @SneakyThrows
-    public JSONArray getSearch(String inputtext, int type){
-
+    public JSONArray getSearch(String inputtext,String up,String down, int type){
+        System.out.println("up :"+up+" down :"+down);
         String encode= URLEncoder.encode(inputtext, "utf-8");
         String search = "http://swopenapi.seoul.go.kr/api/subway/6f58714f6c64686534356359587644/json/realtimeStationArrival/0/8/"+encode;
         URL url = new URL(search);
@@ -58,14 +59,17 @@ public class subwayService {
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject content = (JSONObject) jsonArray.get(i);
             String 상하행 = (String) content.get("updnLine");
-            //System.out.println("상하행 검색 O: " + 상하행);
-            if (상하행.equals("상행")) {
+            String trainLineNm = (String) content.get("trainLineNm");
+            String LineNm = trainLineNm.split("-")[0];
+            System.out.println(trainLineNm);
+            System.out.println("@"+LineNm);
+            if (상하행.equals("상행")&&LineNm.equals(up+"행 ")) {
                 상행리스트.add((JSONObject) jsonArray.get(i));
-            } else if(상하행.equals("하행")){
+            } else if(상하행.equals("하행")&&LineNm.equals(down+"행 ")){
                 하행리스트.add(jsonArray.get(i));
             } else if(상하행.equals("외선")){
                 외선리스트.add(jsonArray.get(i));
-            } else{
+            } else if(상하행.equals("내선")){
                 내선리스트.add(jsonArray.get(i));
             }
         }
@@ -154,34 +158,55 @@ public class subwayService {
         return null;
     }
 
-    public String readExcel()throws IOException {
+    //@RequestParam을 이용해서 파일 전달 자료형은 MultipartFile
+    public List<SubwayDto> readExcel(String serch) throws Exception {
         System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         List<SubwayDto> dataList = new ArrayList<>();
-        String path = "C:\\Users\\506\\Desktop\\intelliJ_box\\subway\\src\\main\\resources\\static\\file\\실시간도착_역정보_220211.xlsx";
+        List<String> frontback = new ArrayList<>();
+        String path = "C:\\Users\\minwook\\Desktop\\새 폴더\\subway0\\src\\main\\resources\\static\\file\\실시간도착_역정보_220211.xlsx";
         File file = new File(path);
         FileInputStream fileInputStream = new FileInputStream(file);
         XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
         // getSheetAt(0); 첫번째 페이지
         Sheet worksheet = workbook.getSheetAt(0);
-        System.out.println(worksheet.toString());
         //  i = 1; 첫 열은 구분  i<worksheet.getPhysicalNumberOfRows(); 열의 길이만큼
         for(int i = 1; i<631; i++){
             // row = i번째 행의 데이터
             Row row = worksheet.getRow(i);
-            SubwayDto data = new SubwayDto();
-            // 행의 1번째 데이터           실수 데이터 가져오기
-            data.setSubwayid(String.valueOf((int)row.getCell(0).getNumericCellValue()) );
-            System.out.println("서브웨이아이디 :"+(int)row.getCell(0).getNumericCellValue());
-            // 행의 2번째 데이터           문자열 데이터 가져오기
-            data.setStatnid(String.valueOf((int)row.getCell(1).getNumericCellValue()));
-            System.out.println("역아이디 :"+(int)row.getCell(1).getNumericCellValue());
-            // 행의 3번째 데이터           문자열 데이터 가져오기
-            // 논리 데이터    .getBooleanCellValue()
-            data.setStatnname(row.getCell(2).getStringCellValue());
-            System.out.println("역네임 :"+row.getCell(2).getStringCellValue());
-            dataList.add(data);
+            if(row.getCell(2).getStringCellValue().equals(serch)){
+                SubwayDto subdata = new SubwayDto();
+                Row row2 = worksheet.getRow(i+1);
+                Row row3 = worksheet.getRow(i-1);
+                subdata.setSubwayid(String.valueOf((int)row.getCell(0).getNumericCellValue()));
+                subdata.setBack(row3.getCell(2).getStringCellValue());
+                subdata.setFront(row2.getCell(2).getStringCellValue());
+                dataList.add(subdata);
+            }
         }
-        return "excelList";
+        System.out.println(dataList.toString());
+        return dataList;
+    }
+
+    //@RequestParam을 이용해서 파일 전달 자료형은 MultipartFile
+    public List<String> readExcel1(String serch) throws Exception {
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        List<String> frontback = new ArrayList<>();
+        String path = "C:\\Users\\minwook\\Desktop\\새 폴더\\subway0\\src\\main\\resources\\static\\file\\실시간도착_역정보_220211.xlsx";
+        File file = new File(path);
+        FileInputStream fileInputStream = new FileInputStream(file);
+        XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+        // getSheetAt(0); 첫번째 페이지
+        Sheet worksheet = workbook.getSheetAt(0);
+        //  i = 1; 첫 열은 구분  i<worksheet.getPhysicalNumberOfRows(); 열의 길이만큼
+        for(int i = 1; i<631; i++){
+            // row = i번째 행의 데이터
+            Row row = worksheet.getRow(i);
+            if(String.valueOf((int)row.getCell(0).getNumericCellValue()).equals(serch)){
+                frontback.add(row.getCell(2).getStringCellValue());
+            }
+        }
+        System.out.println(frontback.toString());
+        return frontback;
     }
 
 

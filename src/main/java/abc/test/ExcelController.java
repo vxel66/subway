@@ -74,7 +74,7 @@ public class ExcelController {
     public String readExcel(Model model)throws IOException{
         System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         List<SubwayDto> dataList = new ArrayList<>();
-        String path = "C:\\Users\\506\\Desktop\\intelliJ_box\\subway\\src\\main\\resources\\static\\file\\실시간도착_역정보_220211.xlsx";
+        String path = "C:\\Users\\minwook\\Desktop\\새 폴더\\subway0\\src\\main\\resources\\static\\file\\실시간도착_역정보_220211.xlsx";
         File file = new File(path);
         FileInputStream fileInputStream = new FileInputStream(file);
         XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
